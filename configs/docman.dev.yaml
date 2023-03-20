@@ -10,6 +10,6 @@ database:
 logger:
   path: "logs/"
   max-age: 30
-  max-size: 100
+  max-size: 50
 jwt:
   secret: outsider@outsider

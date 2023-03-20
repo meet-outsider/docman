@@ -19,9 +19,10 @@ type config struct {
 		Password string `yaml:"password"`
 	} `yaml:"database"`
 	Logger struct {
-		Path    string `yaml:"path"`
-		MaxAge  string `yaml:"max-age"`
-		MaxSize string `yaml:"max-size"`
+		Path       string `yaml:"path"`
+		MaxAge     int    `yaml:"max-age"`
+		MaxSize    int    `yaml:"max-size"`
+		MaxBackups int    `yaml:"max-backups"`
 	}
 	Jwt struct {
 		Secret string `yaml:"secret"`

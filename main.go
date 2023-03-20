@@ -9,4 +9,7 @@ import (
 
 func main() {
 	docman.Execute()
+
+	//log.Info("ssss")
+	//log.Info("ssss")
 }
