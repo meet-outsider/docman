@@ -7,21 +7,30 @@ import (
 
 type config struct {
 	Server struct {
-		Env     string `mapstructure:"env"`
-		Version string `mapstructure:"version"`
-		Port    uint   `mapstructure:"port"`
-	} `mapstructure:"server"`
+		Env     string `yaml:"env"`
+		Version string `yaml:"version"`
+		Port    uint   `yaml:"port"`
+	} `yaml:"server"`
 	Database struct {
-		Host     string `mapstructure:"host"`
-		Port     int    `mapstructure:"port"`
-		User     string `mapstructure:"user"`
-		Password string `mapstructure:"password"`
-	} `mapstructure:"database"`
+		Host     string `yaml:"host"`
+		Port     int    `yaml:"port"`
+		Name     string `yaml:"name"`
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+	} `yaml:"database"`
+	Logger struct {
+		Path    string `yaml:"path"`
+		MaxAge  string `yaml:"max-age"`
+		MaxSize string `yaml:"max-size"`
+	}
+	Jwt struct {
+		Secret string `yaml:"secret"`
+	} `yaml:"jwt"`
 }
 
 var Config config
 
-func ReadYaml() error {
+func Load() error {
 	var port = Config.Server.Port
 	var env = Config.Server.Env
 	// 设置配置文件路径和文件名
@@ -36,8 +45,6 @@ func ReadYaml() error {
 	if err := viper.Unmarshal(&Config); err != nil {
 		panic(fmt.Errorf("unable to decode into struct： %s \n", err))
 	}
-	fmt.Println(Config.Server.Port)
-	fmt.Println(port)
 	if Config.Server.Port == 0 && port == 0 {
 		return fmt.Errorf("port is unset")
 	}

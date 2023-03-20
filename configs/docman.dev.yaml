@@ -1,8 +1,15 @@
 server:
   version: "1.0.0"
-  port: 8080
+  port: 8888
 database:
   host: "localhost"
   port: 3306
   user: "root"
-  password: "password"
+  name: "docman"
+  password: "root"
+logger:
+  path: "logs/"
+  max-age: 30
+  max-size: 100
+jwt:
+  secret: outsider@outsider

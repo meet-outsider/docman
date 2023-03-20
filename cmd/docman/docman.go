@@ -60,5 +60,5 @@ func initConfig() {
 func Execute() {
 	initCorba()
 	initConfig()
-	fmt.Printf("Env:%s Listening port: %d\n", server.Env, server.Port)
+	fmt.Printf("docman Env:%s Listening port: %d\n", server.Env, server.Port)
 }
