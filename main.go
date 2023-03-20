@@ -8,6 +8,5 @@ import (
 )
 
 func main() {
-	// 启动docman应用
 	docman.Execute()
 }

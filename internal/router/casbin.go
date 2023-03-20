@@ -6,19 +6,18 @@ import (
 	"docman/pkg/jwt"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 func BindCasbin() {
-	Gin.GET("/login/:id", func(c *gin.Context) {
-		param := c.Param("id")
-		id, err := strconv.Atoi(param)
-		if err != nil {
-			rsp.Fail(c, "智能为整数", nil)
+	Gin.POST("/login", func(c *gin.Context) {
+		username := c.PostForm("username")
+		password := c.PostForm("password")
+		if len(username) == 0 || len(password) == 0 {
+			rsp.Fail(c, "参数校验失败")
 			return
 		}
-		token := jwt.GenToken(id)
-		rsp.Ok(c, "登陆成功，获取token", token)
+		token := jwt.GenToken(11)
+		rsp.Ok(c, "登陆成功，获取token", "token", token)
 		return
 	})
 	Gin.POST("/info", func(c *gin.Context) {
@@ -26,7 +25,7 @@ func BindCasbin() {
 		fmt.Println("token", token)
 		userId, exp, err := jwt.ParseToken(token)
 		if err != nil {
-			rsp.Fail(c, "token解析错误", err)
+			rsp.Fail(c, "token解析错误")
 			return
 		}
 		rsp.Ok(c, "获取userId成功", "userId", userId, "exp:", exp)

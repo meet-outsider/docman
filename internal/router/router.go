@@ -13,7 +13,7 @@ func Init() {
 	BindCasbin()
 }
 func Run() (e error) {
-	Gin = gin.New()
+	Gin = gin.Default()
 	Init()
 	if err := Gin.Run(fmt.Sprintf(":%d", config.Config.Server.Port)); err != nil {
 		return err
