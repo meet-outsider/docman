@@ -10,7 +10,7 @@ var Gin *gin.Engine
 
 func Init() {
 	BindFile()
-	BindCasbin()
+	BindAuth()
 }
 func Run() (e error) {
 	Gin = gin.Default()

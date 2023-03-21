@@ -51,7 +51,7 @@ func initCorba() {
 }
 func initConfig() {
 	if err := Init.Init(); err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 }

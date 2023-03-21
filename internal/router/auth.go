@@ -4,11 +4,10 @@ import (
 	"docman/internal/rsp"
 	"docman/pkg/global"
 	"docman/pkg/jwt"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
-func BindCasbin() {
+func BindAuth() {
 	Gin.POST("/login", func(c *gin.Context) {
 		username := c.PostForm("username")
 		password := c.PostForm("password")
@@ -22,7 +21,6 @@ func BindCasbin() {
 	})
 	Gin.POST("/info", func(c *gin.Context) {
 		token := c.GetHeader(global.TOKEN)
-		fmt.Println("token", token)
 		userId, exp, err := jwt.ParseToken(token)
 		if err != nil {
 			rsp.Fail(c, "token解析错误")
