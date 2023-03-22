@@ -106,10 +106,9 @@ func getLogWriter() zapcore.WriteSyncer {
 	logFileName := time.Now().Format("2006-01-02") + ".log"
 	if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
 		if err != nil {
-			Error(err.Error())
-		}
-		if e := os.Mkdir(logFilePath, os.ModePerm); e != nil {
-			Error(e.Error())
+			if e := os.Mkdir(logFilePath, os.ModePerm); e != nil {
+				Error(e.Error())
+			}
 		}
 	}
 	config := conf.Config.Logger

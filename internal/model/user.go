@@ -13,7 +13,7 @@ type User struct {
 	Roles    []*Role `gorm:"many2many:user_roles;"`
 }
 
-func AddRoleAndUser(db *gorm.DB, roleName, username, password string) error {
+func CreateUser(db *gorm.DB, roleName, username, password string) error {
 	role := &Role{Name: roleName}
 	if err := db.Create(role).Error; err != nil {
 		return err

@@ -15,7 +15,7 @@ func CreateFile(c *gin.Context) {
 		return
 	}
 	save := model.File{Name: file.Name, Path: file.Path}
-	if err := save.Create(); err != nil {
+	if err := save.Save(); err != nil {
 		rsp.Fail(c, "新增失败")
 	} else {
 		rsp.Ok(c, "创建成功")

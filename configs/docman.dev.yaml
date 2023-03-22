@@ -2,14 +2,21 @@ server:
   version: "1.0.0"
   port: 8888
 database:
-  host: "localhost"
+  host: localhost
   port: 3306
   name: "docman"
   user: "root"
   password: "root"
 logger:
   path: "logs/"
-  max-age: 30
-  max-size: 50
+  max-age: "30"
+  max-size: "50"
 jwt:
-  secret: outsider@outsider
+  secret: "outsider@outsider"
+casbin-rules:
+  skip-urls:
+    - "/login"
+    - '/registry'
+    - '/logout'
+    - '/rules'
+    - '/role'

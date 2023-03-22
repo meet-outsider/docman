@@ -2,6 +2,8 @@ package casbin
 
 import (
 	"docman/pkg/database"
+	"docman/pkg/model"
+	"fmt"
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"log"
@@ -28,4 +30,10 @@ func NewEnforcer() error {
 		return err
 	}
 	return nil
+}
+func Rules() (*model.CasbinRule, error) {
+	var rules *model.CasbinRule
+	tx := database.Inst.Debug().Find(rules)
+	fmt.Println("rules", rules)
+	return rules, tx.Error
 }

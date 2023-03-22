@@ -7,26 +7,29 @@ import (
 
 type config struct {
 	Server struct {
-		Env     string `yaml:"env"`
-		Version string `yaml:"version"`
-		Port    uint   `yaml:"port"`
-	} `yaml:"server"`
+		Env     string
+		Version string
+		Port    uint
+	}
 	Database struct {
-		Host     string `yaml:"host"`
-		Port     int    `yaml:"port"`
-		Name     string `yaml:"name"`
-		User     string `yaml:"user"`
-		Password string `yaml:"password"`
-	} `yaml:"database"`
+		Host     string
+		Port     int
+		Name     string
+		User     string
+		Password string
+	}
 	Logger struct {
-		Path       string `yaml:"path"`
-		MaxAge     int    `yaml:"max-age"`
-		MaxSize    int    `yaml:"max-size"`
-		MaxBackups int    `yaml:"max-backups"`
+		Path       string
+		MaxAge     int `mapstructure:"max-age"`
+		MaxSize    int `mapstructure:"max-size"`
+		MaxBackups int `mapstructure:"max-backups"`
 	}
 	Jwt struct {
-		Secret string `yaml:"secret"`
-	} `yaml:"jwt"`
+		Secret string
+	}
+	CasbinRules struct {
+		SkipUrls []string `mapstructure:"skip-urls"`
+	} `mapstructure:"casbin-rules"`
 }
 
 var Config config
@@ -53,6 +56,5 @@ func Load() error {
 		Config.Server.Port = port
 	}
 	Config.Server.Env = env
-
 	return nil
 }

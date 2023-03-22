@@ -1,27 +1,44 @@
 package model
 
 import (
-	cas "docman/pkg/casbin"
 	"docman/pkg/database"
-	"github.com/casbin/casbin/v2"
+	"errors"
 	"gorm.io/gorm"
 )
 
 type Role struct {
 	gorm.Model
-	Name string `gorm:"unique_index"`
+	Name string `gorm:"unique_index" binding:"required,custom"`
 }
 
-func CheckPermission(e *casbin.Enforcer, username, obj, act string) (bool, error) {
-	roles := make([]string, 0)
-
-	user := &User{}
-	if err := database.Inst.Where("username = ?", username).Preload("Roles").First(user).Error; err != nil {
-		return false, err
+func (r *Role) List(roles *[]Role) error {
+	var tx *gorm.DB
+	if roles == nil {
+		// 查单个
+		tx = database.Inst.Find(&r)
+	} else {
+		tx = database.Inst.Find(&roles)
 	}
-	for _, role := range user.Roles {
-		roles = append(roles, role.Name)
+	if tx.RowsAffected == 0 || roles == nil {
+		return errors.New("无数据")
 	}
-	return cas.Effect.Enforce(username, obj, act, roles)
+	return nil
+}
 
+func (r *Role) Get() error {
+	return database.Inst.Where(r).Find(r).Error
+}
+
+func (r *Role) Create() error {
+	return database.Inst.Create(r).Error
+}
+func (r *Role) SaveBatches(array []Role) error {
+	return database.Inst.CreateInBatches(array, len(array)).Error
+}
+func (r *Role) Update() error {
+	return database.Inst.Updates(r).Error
+}
+
+func (r Role) Delete() error {
+	return database.Inst.Delete(r).Error
 }

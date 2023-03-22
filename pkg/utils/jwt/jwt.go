@@ -2,6 +2,7 @@ package jwt
 
 import (
 	conf "docman/config"
+	"docman/pkg/log"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
@@ -9,13 +10,14 @@ import (
 
 var secret = conf.Config.Jwt.Secret
 
-const CLAIM = "UserId"
+const CLAIM = "subject"
 const EXP = "EXP"
 
-func GenToken(userId int) string {
+func GenToken(subject string) string {
+	fmt.Println("为username gen token", subject)
 	//secret := conf.Config.Jwt.Secret
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		CLAIM: userId,
+		CLAIM: subject,
 		EXP:   time.Now().Add(time.Hour * 24 * 3).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte(secret))
@@ -25,7 +27,7 @@ func GenToken(userId int) string {
 	return tokenString
 }
 
-func ParseToken(tokenString string) (userId int, exp time.Time, err error) {
+func ParseToken(tokenString string) (sub string, exp time.Time, err error) {
 	// Verify the token with the same signing key
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Check the signing method
@@ -36,16 +38,22 @@ func ParseToken(tokenString string) (userId int, exp time.Time, err error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		fmt.Println("Error verifying token:", err)
+		log.Error("Error verifying token:", err.Error())
 		return
 	}
 	// Access the claims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userIdFl, _ := claims[CLAIM].(float64)
-		userId = int(userIdFl)
+		sub, _ = claims[CLAIM].(string)
 		exp = time.Unix(int64(claims[EXP].(float64)), 0)
 	} else {
 		err = fmt.Errorf("invalid token")
 	}
 	return
 }
+
+//func main() {
+//	token := GenToken("root")
+//	println(token)
+//	sub, _, _ := ParseToken(token)
+//	println(sub)
+//}

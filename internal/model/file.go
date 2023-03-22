@@ -31,7 +31,7 @@ func (f *File) Update() error {
 	return f.Update()
 	//return database.Inst.Model(f).Where("id", 1).Update("", "").Error
 }
-func (f *File) Create() error {
+func (f *File) Save() error {
 	return database.Inst.Create(f).Error
 }
 func (f *File) Delete() error {
