@@ -43,22 +43,18 @@ func init() {
 	rootCmd.Flags().UintVarP(&server.Port, "port", "p", 0, "set port value")
 
 }
-func initCorba() {
+func init() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-func initConfig() {
-	if err := Init.Init(); err != nil {
-		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 }
 
 // Execute docman程序入口
 func Execute() {
-	initCorba()
-	initConfig()
+	if err := Init.Init(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 	fmt.Printf("docman Env:%s Listening port: %d\n", server.Env, server.Port)
 }

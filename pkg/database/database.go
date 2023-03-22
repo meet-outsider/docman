@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-var Db *gorm.DB
+var Inst *gorm.DB
 
 func Connect() error {
 	var dbConf = conf.Config.Database
@@ -20,6 +20,6 @@ func Connect() error {
 			SingularTable: true,
 		},
 	})
-	Db = db
+	Inst = db
 	return err
 }

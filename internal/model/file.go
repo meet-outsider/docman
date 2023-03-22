@@ -18,9 +18,9 @@ func (f *File) Find(files *[]File) (err error) {
 	var tx *gorm.DB
 	if files == nil {
 		// 查单个
-		tx = database.Db.Find(&f)
+		tx = database.Inst.Find(&f)
 	} else {
-		tx = database.Db.Find(&files)
+		tx = database.Inst.Find(&files)
 	}
 	if tx.RowsAffected == 0 || files == nil {
 		err = errors.New("无数据")
@@ -28,17 +28,18 @@ func (f *File) Find(files *[]File) (err error) {
 	return
 }
 func (f *File) Update() error {
-	return database.Db.Create(f).Error
+	return f.Update()
+	//return database.Inst.Model(f).Where("id", 1).Update("", "").Error
 }
 func (f *File) Create() error {
-	return database.Db.Create(f).Error
+	return database.Inst.Create(f).Error
 }
 func (f *File) Delete() error {
-	return database.Db.Delete(f).Error
+	return database.Inst.Delete(f).Error
 }
 
 // Clear 删除30天之前的逻辑删除字段
 func (f *File) Clear() (err error) {
-	return database.Db.Unscoped().Delete(f).
+	return database.Inst.Unscoped().Delete(f).
 		Where("created_at < ?", time.Now().AddDate(0, 0, -30)).Error
 }

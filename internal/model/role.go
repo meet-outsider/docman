@@ -16,7 +16,7 @@ func CheckPermission(e *casbin.Enforcer, username, obj, act string) (bool, error
 	roles := make([]string, 0)
 
 	user := &User{}
-	if err := database.Db.Where("username = ?", username).Preload("Roles").First(user).Error; err != nil {
+	if err := database.Inst.Where("username = ?", username).Preload("Roles").First(user).Error; err != nil {
 		return false, err
 	}
 	for _, role := range user.Roles {
