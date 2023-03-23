@@ -15,8 +15,8 @@ jwt:
   secret: "outsider@outsider"
 casbin-rules:
   skip-urls:
-    - "/login"
-    - '/registry'
-    - '/logout'
-    - '/rules'
-    - '/role'
+    - "/login::POST"
+    - '/registry::POST'
+    - '/logout::GET'
+    - '/rules::GET'
+    - '/role/list::GET'

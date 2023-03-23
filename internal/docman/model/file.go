@@ -18,9 +18,9 @@ func (f *File) Find(files *[]File) (err error) {
 	var tx *gorm.DB
 	if files == nil {
 		// 查单个
-		tx = database.Inst.Find(&f)
+		tx = database.Inst.Find(f)
 	} else {
-		tx = database.Inst.Find(&files)
+		tx = database.Inst.Find(files)
 	}
 	if tx.RowsAffected == 0 || files == nil {
 		err = errors.New("无数据")

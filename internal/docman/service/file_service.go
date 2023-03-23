@@ -1,8 +1,8 @@
 package service
 
 import (
-	"docman/internal/model"
-	"docman/internal/rsp"
+	"docman/internal/docman/model"
+	"docman/internal/pkg/rsp"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"strconv"

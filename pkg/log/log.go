@@ -35,11 +35,7 @@ func init() {
 // 日志编码格式
 func getEncoder(isFile bool) zapcore.Encoder {
 	consoleSeparator := ""
-	//if runtime.GOOS == "darwin" {
-	//	consoleSeparator = " | "
-	//} else {
 	consoleSeparator = " \033[0m|\033[0m "
-	//}
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey:    "message",
 		LevelKey:      "level",
@@ -63,9 +59,6 @@ func getEncoder(isFile bool) zapcore.Encoder {
 		},
 		LineEnding:       "",
 		ConsoleSeparator: consoleSeparator,
-		//EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-		//	enc.AppendString(t.Format("2006-01-02 15:04:05"))
-		//},
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString("\033[37m" + t.Format("2006-01-02 15:04:05") + "\033[0m")
 		},

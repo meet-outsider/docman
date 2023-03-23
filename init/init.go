@@ -2,7 +2,7 @@ package init
 
 import (
 	conf "docman/config"
-	"docman/internal/router"
+	"docman/internal/docman/router"
 	"docman/pkg/casbin"
 	"docman/pkg/database"
 	"docman/pkg/log"

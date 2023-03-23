@@ -32,8 +32,15 @@ func NewEnforcer() error {
 	return nil
 }
 func Rules() (*model.CasbinRule, error) {
-	var rules *model.CasbinRule
-	tx := database.Inst.Debug().Find(rules)
+	var rules = model.CasbinRule{}
+	tx := database.Inst.Debug().Find(&rules)
 	fmt.Println("rules", rules)
-	return rules, tx.Error
+	return &rules, tx.Error
 }
+
+//func CreateRule(sub string,,act string) error {
+//	var rules = model.CasbinRule{}
+//
+//	casbin.Enforcer.SavePolicy()
+//	return &rules, tx.Error
+//}
