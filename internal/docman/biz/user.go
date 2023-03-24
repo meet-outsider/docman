@@ -4,54 +4,88 @@ import (
 	"docman/internal/docman/data"
 	"docman/internal/docman/repo"
 	"docman/pkg/kit"
-	"errors"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type IUserBiz interface {
-	Save(user *data.User) error
-	GetByID(id uint) (*data.User, error)
-	GetByUsername(username string) (*data.User, error)
-	List(pageNum int, pageSize int) ([]*data.User, int64, error)
-	Update(user *data.User) error
-	DeleteByID(u uint) error
+	Save(c *gin.Context, user *data.User)
+	GetByID(c *gin.Context, id uint)
+	GetByUsername(c *gin.Context, username string)
+	List(c *gin.Context, pageNum int, pageSize int)
+	Update(c *gin.Context, user *data.User)
+	DeleteByID(c *gin.Context, u uint)
 }
 
 type userBiz struct {
 	repo repo.IUserRepo
 }
 
-func NewUserRepo(repo repo.IUserRepo) IUserBiz {
+func NewUserBiz(repo repo.IUserRepo) IUserBiz {
 	return &userBiz{repo}
 }
 
-func (s *userBiz) Save(user *data.User) error {
-	isExist, _ := s.GetByUsername(user.Username)
+func (s *userBiz) Save(c *gin.Context, user *data.User) {
+	isExist, err := s.repo.GetByUsername(user.Username)
 	if isExist != nil {
-		return errors.New("用户已存在")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名已存在"})
+		return
 	}
 	// 密码加密
 	user.Password = kit.Encrypt(user.Password)
-	_, err := s.repo.Save(user)
+	err = s.repo.Save(user)
 	if err != nil {
-		return err
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	return nil
+	c.JSON(http.StatusOK, gin.H{"user": user})
+	return
 }
 
-func (s *userBiz) GetByID(id uint) (*data.User, error) {
-	return s.repo.GetByID(id)
+func (s *userBiz) GetByID(c *gin.Context, id uint) {
+	user, err := s.repo.GetByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "用户不存在"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": user})
+	return
 }
 
-func (s *userBiz) GetByUsername(username string) (*data.User, error) {
-	return s.repo.GetByUsername(username)
+func (s *userBiz) GetByUsername(c *gin.Context, username string) {
+	user, err := s.repo.GetByUsername(username)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "用户不存在"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": user})
+	return
 }
 
-func (s *userBiz) List(page int, limit int) ([]*data.User, int64, error) {
-	return s.repo.List(page, limit)
+func (s *userBiz) List(c *gin.Context, page int, limit int) {
+	list, total, err := s.repo.List(page, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, kit.BuildPagination(list, total, page, limit))
+	return
 }
-func (s *userBiz) Update(user *data.User) error {
-	return s.repo.Update(user)
+func (s *userBiz) Update(c *gin.Context, user *data.User) {
+	err := s.repo.Update(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": user})
+	return
 }
-func (s *userBiz) DeleteByID(u uint) error {
-	return s.repo.DeleteByID(u)
+func (s *userBiz) DeleteByID(c *gin.Context, u uint) {
+	err := s.repo.DeleteByID(u)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
+	return
 }

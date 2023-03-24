@@ -20,6 +20,9 @@ func Connect() error {
 			SingularTable: true,
 		},
 	})
+	if cfg.Config.Server.Env == "dev" {
+		db = db.Debug()
+	}
 	Inst = db
 	return err
 }

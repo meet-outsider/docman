@@ -91,7 +91,7 @@ func Run(initRoutes ...func()) error {
 	Inst.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "404 not found"})
 	})
-	Inst.Use(ErrorHandler())
+	//Inst.Use(ErrorHandler())
 	for _, route := range initRoutes {
 		route()
 	}
