@@ -1,10 +1,11 @@
 package init
 
 import (
-	conf "docman/config"
-	"docman/internal/docman/router"
+	"docman/cfg"
+	"docman/internal/docman"
 	"docman/pkg/casbin"
 	"docman/pkg/database"
+	"docman/pkg/kit"
 	"docman/pkg/log"
 	"docman/pkg/server"
 	"errors"
@@ -18,7 +19,7 @@ func Init() error {
 	3、启动casbin权限控制服务
 	4、启动应用
 	*/
-	if err := conf.Load(); err != nil {
+	if err := cfg.Load(); err != nil {
 		log.Error(err.Error())
 		return fmt.Errorf("读取配置文件失败")
 	}
@@ -30,7 +31,11 @@ func Init() error {
 		log.Error(err.Error())
 		return errors.New("casbin init failed")
 	}
-	if err := server.Run(router.InitDocmanRoutes, func() {
+	if err := kit.Init(); err != nil {
+		log.Error(err.Error())
+		return errors.New("validator init failed")
+	}
+	if err := server.Run(docman.InitRoutes, func() {
 		fmt.Println("init routes success!")
 	}); err != nil {
 		log.Error(err.Error())

@@ -1,7 +1,7 @@
 package database
 
 import (
-	conf "docman/config"
+	"docman/cfg"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,7 +11,7 @@ import (
 var Inst *gorm.DB
 
 func Connect() error {
-	var dbConf = conf.Config.Database
+	var dbConf = cfg.Config.Database
 	fmt.Printf("%v", dbConf)
 	var dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		dbConf.User, dbConf.Password, dbConf.Host, dbConf.Port, dbConf.Name)

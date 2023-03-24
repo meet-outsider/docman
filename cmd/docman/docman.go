@@ -1,7 +1,7 @@
-package docman
+package main
 
 import (
-	"docman/config"
+	"docman/cfg"
 	Init "docman/init"
 	"fmt"
 	"os"
@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	server  = &config.Config.Server
+	server  = &cfg.Config.Server
 	rootCmd = &cobra.Command{
 		Use:     "doc",
 		Version: server.Version,

@@ -1,6 +1,7 @@
 server:
   version: "1.0.0"
   port: 8888
+  api: /api/v1
 database:
   host: localhost
   port: 3306
@@ -17,6 +18,4 @@ casbin-rules:
   skip-urls:
     - "/login::POST"
     - '/registry::POST'
-    - '/logout::GET'
-    - '/rules::GET'
-    - '/role/list::GET'
+    - '/info::GET'

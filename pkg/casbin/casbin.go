@@ -2,8 +2,6 @@ package casbin
 
 import (
 	"docman/pkg/database"
-	"docman/pkg/model"
-	"fmt"
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"log"
@@ -31,16 +29,41 @@ func NewEnforcer() error {
 	}
 	return nil
 }
-func Rules() (*model.CasbinRule, error) {
-	var rules = model.CasbinRule{}
-	tx := database.Inst.Debug().Find(&rules)
-	fmt.Println("rules", rules)
-	return &rules, tx.Error
-}
 
-//func CreateRule(sub string,,act string) error {
-//	var rules = model.CasbinRule{}
-//
-//	casbin.Enforcer.SavePolicy()
-//	return &rules, tx.Error
-//}
+func GetAllPolicy() [][]string {
+	// 打印Effect的所有策略
+	policy := Effect.GetPolicy()
+	return policy
+}
+func AddPolicy(sub string, obj string, act string) error {
+	// 添加策略
+	_, err := Effect.AddPolicy(sub, obj, act)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func RemovePolicy(sub string, obj string, act string) error {
+	// 删除策略
+	_, err := Effect.RemovePolicy(sub, obj, act)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func RemoveFilteredPolicy(sub string, obj string, act string) error {
+	// 删除策略
+	_, err := Effect.RemoveFilteredPolicy(0, sub, obj, act)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func RemoveFilteredGroupingPolicy(sub string, obj string, act string) error {
+	// 删除策略
+	_, err := Effect.RemoveFilteredGroupingPolicy(0, sub, obj, act)
+	if err != nil {
+		return err
+	}
+	return nil
+}

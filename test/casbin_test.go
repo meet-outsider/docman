@@ -8,7 +8,7 @@ import (
 	"github.com/casbin/casbin/v2"
 )
 
-func Tsest(t *testing.T) {
+func Test(t *testing.T) {
 	// 初始化 casbin Enforcer
 
 	//a, err := gormadapter.NewAdapterByDB(database.Db)

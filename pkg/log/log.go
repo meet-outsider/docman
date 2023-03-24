@@ -1,7 +1,7 @@
 package log
 
 import (
-	conf "docman/config"
+	"docman/cfg"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -19,7 +19,7 @@ var (
 )
 
 func init() {
-	debug = conf.Config.Server.Env != "dev"
+	debug = cfg.Config.Server.Env != "dev"
 	// 初始化控制台logger
 	consoleEncoder := getEncoder(false)
 	consoleCore := zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel)
@@ -104,7 +104,7 @@ func getLogWriter() zapcore.WriteSyncer {
 			}
 		}
 	}
-	config := conf.Config.Logger
+	config := cfg.Config.Logger
 	fileWriter := &lumberjack.Logger{
 		Filename:   filepath.Join(logFilePath, logFileName),
 		MaxSize:    config.MaxSize,    // MB
