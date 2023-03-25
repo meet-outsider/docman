@@ -1,7 +1,6 @@
 package kit
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"math"
 	"net/http"
@@ -27,7 +26,6 @@ func PostPage(c *gin.Context) (page int, limit int, err error) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page limit"})
 		return
 	}
-	fmt.Println("page:", page, "limit:", limit)
 	return
 }
 func GetPage(c *gin.Context) (page int, limit int, err error) {
@@ -41,7 +39,6 @@ func GetPage(c *gin.Context) (page int, limit int, err error) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page limit"})
 		return
 	}
-	fmt.Println("page:", page, "limit:", limit)
 	return
 }
 func BuildPagination(records interface{}, total int64, page, limit int) *Pagination {

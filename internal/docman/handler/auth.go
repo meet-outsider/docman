@@ -21,8 +21,8 @@ func NewAuthHandler(biz biz.IAuthBiz) *AuthHandler {
 // Login 用户登录
 func (h *AuthHandler) Login(c *gin.Context) {
 	var params map[string]string
-	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": kit.Translate(err)})
+	ok := kit.BindJson(c, &params)
+	if !ok {
 		return
 	}
 	username := params["username"]
@@ -38,10 +38,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // Registry 用户注册
 func (h *AuthHandler) Registry(c *gin.Context) {
 	var user data.UserInput
-	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": kit.Translate(err)})
+	ok := kit.BindJson(c, &user)
+	if !ok {
 		return
 	}
+	// 注册用户为默认角色
+	user.Roles = []uint{1}
 	h.biz.Registry(c, &user)
 }
 

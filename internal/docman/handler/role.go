@@ -3,6 +3,7 @@ package handler
 import (
 	"docman/internal/docman/biz"
 	"docman/internal/docman/data"
+	"docman/pkg/kit"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -18,8 +19,8 @@ func NewRoleHandler(biz biz.IRoleBiz) *RoleHandler {
 
 func (h *RoleHandler) Create(c *gin.Context) {
 	var role data.Role
-	if err := c.ShouldBindJSON(&role); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	ok := kit.BindJson(c, &role)
+	if !ok {
 		return
 	}
 	h.biz.Save(c, &role)
@@ -35,8 +36,7 @@ func (h *RoleHandler) GetByID(c *gin.Context) {
 }
 
 func (h *RoleHandler) GetByName(c *gin.Context) {
-	name := c.Param("name")
-	h.biz.GetByName(c, name)
+	h.biz.GetByName(c, c.Param("name"))
 }
 
 func (h *RoleHandler) List(c *gin.Context) {

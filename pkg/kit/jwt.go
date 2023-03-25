@@ -16,14 +16,13 @@ const CLAIM = "userInfo"
 const EXP = "EXP"
 
 func GenToken(subject model.UserInfo) string {
-	fmt.Println("tooen 信息", subject)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		CLAIM: subject,
 		EXP:   time.Now().Add(time.Hour * 24 * 3).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		fmt.Println("Error creating token:", err)
+		log.Error("Error generating token:", err.Error())
 	}
 	return tokenString
 }
@@ -54,10 +53,3 @@ func ParseToken(tokenString string) (sub model.UserInfo, exp time.Time, err erro
 	}
 	return
 }
-
-//func main() {
-//	token := GenToken("root")
-//	println(token)
-//	sub, _, _ := ParseToken(token)
-//	println(sub)
-//}

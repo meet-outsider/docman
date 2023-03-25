@@ -24,7 +24,7 @@ func InitRoutes() {
 		userV.GET("/:id", userHandler.GetByID)                      //根据id查询
 		userV.PUT("/:id", userHandler.Update)                       //修改用户信息
 		userV.DELETE("/:id", userHandler.DeleteByID)                //根据id删除
-		userV.POST("", nil)                                         //创建用户
+		userV.POST("", userHandler.Save)                            //创建用户
 		userV.GET("/username/:username", userHandler.GetByUsername) //根据name查询
 		userV.GET("", userHandler.List)                             //查询用户列表
 

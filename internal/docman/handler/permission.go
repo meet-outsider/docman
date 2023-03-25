@@ -3,6 +3,7 @@ package handler
 import (
 	"docman/internal/docman/biz"
 	"docman/internal/docman/data"
+	"docman/pkg/kit"
 	"net/http"
 	"strconv"
 
@@ -19,8 +20,8 @@ func NewPermissionHandler(biz biz.IPermissionBiz) *PermissionHandler {
 
 func (h *PermissionHandler) Create(c *gin.Context) {
 	var perm data.Permission
-	if err := c.ShouldBindJSON(&perm); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	ok := kit.BindJson(c, &perm)
+	if !ok {
 		return
 	}
 	h.biz.Save(c, &perm)

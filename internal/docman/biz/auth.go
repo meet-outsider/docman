@@ -3,11 +3,9 @@ package biz
 import (
 	"docman/internal/docman/data"
 	"docman/internal/docman/repo"
-	"docman/pkg/database"
 	"docman/pkg/global"
 	"docman/pkg/kit"
 	"docman/pkg/model"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -48,7 +46,6 @@ func (h *authBiz) Login(c *gin.Context, username string, password string) {
 		Username: user.Username,
 		Roles:    roles,
 	}
-	fmt.Println("userInfo", userInfo)
 	token := kit.GenToken(userInfo)
 	c.JSON(http.StatusOK, gin.H{"token": token})
 	return
@@ -56,37 +53,7 @@ func (h *authBiz) Login(c *gin.Context, username string, password string) {
 
 // Registry 用户注册
 func (h *authBiz) Registry(c *gin.Context, user *data.UserInput) {
-	save := user.User
-	err := h.userRepo.Save(&save)
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
-		return
-	}
-	roleIDs := user.Roles
-	// 保存用户角色关系
-	tx := database.Inst.Begin()
-	if len(roleIDs) != 0 {
-		for _, id := range roleIDs {
-			_, err := h.userRepo.GetByID(id)
-			if err != nil {
-				tx.Rollback()
-				c.JSON(http.StatusNotFound, gin.H{"error": "角色不存在"})
-				return
-			}
-			e := database.Inst.Save(data.UserRole{
-				UserID: save.ID,
-				RoleID: id,
-			}).Error
-			if e != nil {
-				tx.Rollback()
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "保存用户角色关系失败"})
-				return
-			}
-		}
-	}
-	tx.Commit()
-	c.JSON(http.StatusOK, gin.H{"msg": "注册成功"})
-	return
+	NewUserBiz(h.userRepo).Save(c, user)
 }
 
 func (h *authBiz) Info(c *gin.Context) {

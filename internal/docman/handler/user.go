@@ -23,9 +23,7 @@ func NewUserHandler(biz biz.IUserBiz) *UserHandler {
 }
 
 func (h *UserHandler) GetByID(c *gin.Context) {
-	fmt.Println("getByid ")
 	id, err := strconv.Atoi(c.Param("id"))
-	fmt.Println("getByid ", id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
 		return
@@ -34,8 +32,7 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 }
 
 func (h *UserHandler) GetByUsername(c *gin.Context) {
-	username := c.Param("username")
-	h.biz.GetByUsername(c, username)
+	h.biz.GetByUsername(c, c.Param("username"))
 }
 
 func (h *UserHandler) List(c *gin.Context) {
@@ -50,14 +47,15 @@ func (h *UserHandler) List(c *gin.Context) {
 // Update 更新用户
 func (h *UserHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
+	fmt.Println("id", id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
 		return
 	}
-	fmt.Println(id)
-	var param User
-	if err := c.ShouldBindJSON(&param); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var param data.UserInput
+	param.ID = uint(id)
+	ok := kit.UnmarshalJSON(c, &param)
+	if !ok {
 		return
 	}
 	h.biz.Update(c, &param.User)
@@ -70,4 +68,19 @@ func (h *UserHandler) DeleteByID(context *gin.Context) {
 		return
 	}
 	h.biz.DeleteByID(context, uint(id))
+}
+
+func (h *UserHandler) Save(c *gin.Context) {
+	var param data.UserInput
+	// 参数校验
+	ok := kit.BindJson(c, &param)
+	if !ok {
+		return
+	}
+	fmt.Println("param roles", param.Roles)
+	if len(param.Roles) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "roles is required"})
+		return
+	}
+	h.biz.Save(c, &param)
 }

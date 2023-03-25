@@ -5,12 +5,15 @@ package kit
 //将验证器错误翻译成中文
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
+	"net/http"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -40,6 +43,24 @@ func Init() error {
 	}
 	//注册翻译器
 	return zhTranslations.RegisterDefaultTranslations(validate, trans)
+}
+
+func UnmarshalJSON(c *gin.Context, param interface{}) bool {
+	if err := c.ShouldBindJSON(param); err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			// 参数转换错误
+			c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+			return false
+		}
+	}
+	return true
+}
+func BindJson(c *gin.Context, param interface{}) bool {
+	if err := c.ShouldBindJSON(param); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": Translate(err)})
+		return false
+	}
+	return true
 }
 
 // Translate 翻译错误信息

@@ -44,16 +44,15 @@ func verifyToken(c *gin.Context) {
 		return
 	}
 	if exp.Before(time.Now()) {
-		fmt.Println("过期时间", exp)
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User identity expired / 用户身份过期"})
 	}
 	subs := subject.Roles
 	obj := c.Request.RequestURI
 	act := c.Request.Method
+	fmt.Printf("sub: %v, obj: %v, act: %v", subs, obj, act)
 	for i := range subs {
 		sub := subs[i]
 		ok, err := casbin.Effect.Enforce(sub, obj, act)
-		fmt.Printf("sub: %s, obj: %s, act: %s, ok: %v, err: %v", sub, obj, act, ok, err)
 		if err != nil {
 			log.Error(err.Error())
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden access / 禁止访问"})
@@ -91,7 +90,7 @@ func Run(initRoutes ...func()) error {
 	Inst.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "404 not found"})
 	})
-	//Inst.Use(ErrorHandler())
+	Inst.Use(ErrorHandler())
 	for _, route := range initRoutes {
 		route()
 	}
