@@ -1,6 +1,7 @@
 package main
 
 import (
+	"docman/cmd/docman"
 	"fmt"
 )
 
@@ -10,5 +11,5 @@ func main() {
 			fmt.Println("app exit panic cause:", err)
 		}
 	}()
-	Execute()
+	docman.Execute()
 }
