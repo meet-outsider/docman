@@ -4,7 +4,6 @@ import (
 	"docman/internal/docman/biz"
 	"docman/internal/docman/data"
 	"docman/pkg/kit"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -47,7 +46,6 @@ func (h *UserHandler) List(c *gin.Context) {
 // Update 更新用户
 func (h *UserHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	fmt.Println("id", id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
 		return
@@ -77,7 +75,6 @@ func (h *UserHandler) Save(c *gin.Context) {
 	if !ok {
 		return
 	}
-	fmt.Println("param roles", param.Roles)
 	if len(param.Roles) == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "roles is required"})
 		return

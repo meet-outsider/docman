@@ -8,10 +8,11 @@ import (
 	"docman/pkg/log"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func ErrorHandler() gin.HandlerFunc {
@@ -49,7 +50,6 @@ func verifyToken(c *gin.Context) {
 	subs := subject.Roles
 	obj := c.Request.RequestURI
 	act := c.Request.Method
-	fmt.Printf("sub: %v, obj: %v, act: %v", subs, obj, act)
 	for i := range subs {
 		sub := subs[i]
 		ok, err := casbin.Effect.Enforce(sub, obj, act)
