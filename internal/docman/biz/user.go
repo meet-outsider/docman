@@ -15,7 +15,8 @@ type IUserBiz interface {
 	GetByUsername(c *gin.Context, username string)
 	List(c *gin.Context, pageNum int, pageSize int)
 	Update(c *gin.Context, user *data.User)
-	DeleteByID(c *gin.Context, u uint)
+	DeleteByID(c *gin.Context, id uint)
+	DeleteByIDs(c *gin.Context, ids []uint)
 }
 
 type userBiz struct {
@@ -98,6 +99,16 @@ func (s *userBiz) Update(c *gin.Context, user *data.User) {
 
 func (s *userBiz) DeleteByID(c *gin.Context, u uint) {
 	err := s.repo.DeleteByID(u)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
+	return
+}
+
+func (s *userBiz) DeleteByIDs(c *gin.Context, ids []uint) {
+	err := s.repo.DeleteByIDs(ids)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

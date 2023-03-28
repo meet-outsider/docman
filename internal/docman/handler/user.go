@@ -4,9 +4,11 @@ import (
 	"docman/internal/docman/biz"
 	"docman/internal/docman/data"
 	"docman/pkg/kit"
-	"github.com/gin-gonic/gin"
+	"docman/pkg/model"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
@@ -80,4 +82,13 @@ func (h *UserHandler) Save(c *gin.Context) {
 		return
 	}
 	h.biz.Save(c, &param)
+}
+
+func (h *UserHandler) DeleteByIDs(c *gin.Context) {
+	var ids model.IDs
+	ok := kit.BindJson(c, &ids)
+	if !ok {
+		return
+	}
+	h.biz.DeleteByIDs(c, ids.IDs)
 }

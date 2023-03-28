@@ -11,7 +11,8 @@ type IUserRepo interface {
 	GetByUsername(username string) (*data.User, error)
 	List(page int, limit int) ([]*data.User, int64, error)
 	Update(user *data.User) error
-	DeleteByID(u uint) error
+	DeleteByID(id uint) error
+	DeleteByIDs(ids []uint) error
 }
 
 type userRepo struct {
@@ -56,6 +57,14 @@ func (r *userRepo) List(page int, limit int) ([]*data.User, int64, error) {
 func (r *userRepo) Update(user *data.User) error {
 	return r.db.Updates(user).Error
 }
-func (r *userRepo) DeleteByID(u uint) error {
-	return r.db.Delete(&data.User{}, u).Error
+func (r *userRepo) DeleteByID(id uint) error {
+	return r.db.Delete(&data.User{}, id).Error
+}
+
+func (r *userRepo) DeleteByIDs(ids []uint) error {
+	var users []data.User
+	for _, id := range ids {
+		users = append(users, data.User{Model: gorm.Model{ID: id}})
+	}
+	return r.db.Delete(&users).Error
 }

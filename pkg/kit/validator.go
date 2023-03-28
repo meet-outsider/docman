@@ -5,7 +5,7 @@ package kit
 //将验证器错误翻译成中文
 
 import (
-	"fmt"
+	"docman/pkg/log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -50,6 +50,7 @@ func Init() error {
 func UnmarshalJSON(c *gin.Context, param interface{}) bool {
 	if err := c.ShouldBindJSON(param); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
+			log.Error(err.Error())
 			// 参数转换错误
 			c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
 			return false
@@ -59,7 +60,7 @@ func UnmarshalJSON(c *gin.Context, param interface{}) bool {
 }
 func BindJson(c *gin.Context, param interface{}) bool {
 	if err := c.ShouldBindJSON(param); err != nil {
-		fmt.Println("errsssss", err)
+		log.Error(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": Translate(err)})
 		return false
 	}
