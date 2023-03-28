@@ -5,15 +5,17 @@ package kit
 //将验证器错误翻译成中文
 
 import (
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 var (
@@ -57,6 +59,7 @@ func UnmarshalJSON(c *gin.Context, param interface{}) bool {
 }
 func BindJson(c *gin.Context, param interface{}) bool {
 	if err := c.ShouldBindJSON(param); err != nil {
+		fmt.Println("errsssss", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": Translate(err)})
 		return false
 	}

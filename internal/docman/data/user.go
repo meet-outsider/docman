@@ -16,5 +16,5 @@ type User struct {
 }
 type UserInput struct {
 	User
-	Roles []uint `binding:"required"`
+	Roles []uint `json:"roles" binding:"required"`
 }

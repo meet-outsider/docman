@@ -44,11 +44,14 @@ func (r *userRepo) GetByUsername(username string) (*data.User, error) {
 
 func (r *userRepo) List(page int, limit int) ([]*data.User, int64, error) {
 	var users []*data.User
+	var count int64
+	r.db.Model(&data.User{}).Count(&count)
 	tx := r.db.Preload("Roles").Offset((page - 1) * limit).Limit(limit).Find(&users)
 	if tx.Error != nil {
 		return nil, 0, tx.Error
 	}
-	return users, tx.RowsAffected, nil
+
+	return users, count, nil
 }
 func (r *userRepo) Update(user *data.User) error {
 	return r.db.Updates(user).Error
