@@ -3,17 +3,18 @@ package docman
 import (
 	"docman/cfg"
 	Init "docman/init"
-	"fmt"
+	"docman/pkg/log"
+	"docman/pkg/server"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	server  = &cfg.Config.Server
-	rootCmd = &cobra.Command{
+	serverConf = &cfg.Config.Server
+	rootCmd    = &cobra.Command{
 		Use:     "doc",
-		Version: server.Version,
+		Version: serverConf.Version,
 		Short:   "A brief description of your application",
 		Long:    `A longer description that spans multiple lines and likely contains examples and usage of using your application. For example:`,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -21,11 +22,11 @@ var (
 			prod := cmd.Flags().Changed("prod")
 			env := cmd.Flags().Changed("Env")
 			if dev {
-				server.Env = "dev"
+				serverConf.Env = "dev"
 			} else if prod {
-				server.Env = "prod"
-			} else if env && server.Env != "dev" && server.Env != "prod" {
-				fmt.Println("Env args error")
+				serverConf.Env = "prod"
+			} else if env && serverConf.Env != "dev" && serverConf.Env != "prod" {
+				log.Error("Env value must be dev or prod")
 				os.Exit(1)
 			} else {
 				//todo##
@@ -39,13 +40,13 @@ func init() {
 	// 初始化相关配置或服务
 	rootCmd.Flags().Bool("dev", false, "run in dev mode")
 	rootCmd.Flags().Bool("prod", false, "run in prod mode")
-	rootCmd.Flags().StringVarP(&server.Env, "Env", "e", "dev", "set Env value")
-	rootCmd.Flags().UintVarP(&server.Port, "port", "p", 0, "set port value")
+	rootCmd.Flags().StringVarP(&serverConf.Env, "Env", "e", "dev", "set Env value")
+	rootCmd.Flags().UintVarP(&serverConf.Port, "port", "p", 0, "set port value")
 
 }
 func init() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		log.Error(err.Error())
 		os.Exit(1)
 	}
 }
@@ -53,8 +54,11 @@ func init() {
 // Execute docman程序入口
 func Execute() {
 	if err := Init.Init(); err != nil {
-		fmt.Println(err.Error())
+		log.Error("init failed", err.Error())
 		os.Exit(1)
 	}
-	fmt.Printf("docman Env:%s Listening port: %d\n", server.Env, server.Port)
+	if err := server.Run(); err != nil {
+		log.Error("server run failed", err.Error())
+		os.Exit(1)
+	}
 }

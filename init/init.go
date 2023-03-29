@@ -35,10 +35,7 @@ func Init() error {
 		log.Error(err.Error())
 		return errors.New("validator init failed")
 	}
-	if err := server.Run(docman.InitRoutes, func() {
-	}); err != nil {
-		log.Error(err.Error())
-		return errors.New("server run failed")
-	}
+	server.Init()
+	docman.InitRoutes()
 	return nil
 }

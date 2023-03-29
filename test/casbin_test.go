@@ -3,6 +3,8 @@ package cbsbin_test
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/casbin/casbin/v2"
@@ -15,7 +17,14 @@ func Test(t *testing.T) {
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
-	e, err := casbin.NewEnforcer("configs/rbac_model.conf", "configs/policy.csv")
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	modelFile := filepath.Join(cwd, "../configs", "rbac_model.conf")
+	policyFile := filepath.Join(cwd, "../configs", "policy.csv")
+
+	e, err := casbin.NewEnforcer(modelFile, policyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
