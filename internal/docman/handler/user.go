@@ -5,10 +5,9 @@ import (
 	"docman/internal/docman/data"
 	"docman/pkg/kit"
 	"docman/pkg/model"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {

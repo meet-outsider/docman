@@ -4,7 +4,6 @@ import (
 	"docman/internal/docman/biz"
 	"docman/internal/docman/data"
 	"docman/pkg/kit"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -31,7 +30,6 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名或密码不能为空"})
 		return
 	}
-	fmt.Println("handler user", username, password)
 	h.biz.Login(c, username, password)
 }
 

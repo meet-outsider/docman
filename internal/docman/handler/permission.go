@@ -4,10 +4,9 @@ import (
 	"docman/internal/docman/biz"
 	"docman/internal/docman/data"
 	"docman/pkg/kit"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 type PermissionHandler struct {
