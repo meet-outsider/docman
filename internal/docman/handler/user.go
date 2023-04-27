@@ -35,6 +35,10 @@ func (h *UserHandler) GetByUsername(c *gin.Context) {
 	h.biz.GetByUsername(c, c.Param("username"))
 }
 
+func (h *UserHandler) ListByUsername(c *gin.Context) {
+	h.biz.ListByUsername(c, c.Param("username"))
+}
+
 func (h *UserHandler) List(c *gin.Context) {
 	page, limit, err := kit.GetPage(c)
 	if err != nil {

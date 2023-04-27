@@ -7,65 +7,109 @@ import (
 	"docman/internal/docman/repo"
 	"docman/pkg/casbin"
 	"docman/pkg/database"
+	"docman/pkg/model"
 	"docman/pkg/server"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func InitRoutes() {
 	prefix := cfg.Config.Server.Api
-	v := server.Inst.Group(prefix)
+	v1 := server.Inst.Group(prefix)
 
 	userRepo := repo.NewUserRepo(database.Inst)
 	userBiz := biz.NewUserBiz(userRepo)
 	userHandler := handler.NewUserHandler(userBiz)
-	userV := v.Group("/users")
+	// user
 	{
-		userV.GET("/:id", userHandler.GetByID)                      //根据id查询
-		userV.PUT("/:id", userHandler.Update)                       //修改用户信息
-		userV.DELETE("/:id", userHandler.DeleteByID)                //根据id删除
-		userV.DELETE("", userHandler.DeleteByIDs)                   //根据id删除
-		userV.POST("", userHandler.Save)                            //创建用户
-		userV.GET("/username/:username", userHandler.GetByUsername) //根据name查询
-		userV.GET("", userHandler.List)                             //查询用户列表
+		v1.GET("/user/:id", userHandler.GetByID)
+		v1.GET("/user/username/:username", userHandler.GetByUsername)
+		v1.GET("/users/username/:username", userHandler.ListByUsername)
+		v1.GET("/users", userHandler.List)
+		v1.POST("/user", userHandler.Save)
+		v1.PUT("/user/:id", userHandler.Update)
+		v1.DELETE("/user/:id", userHandler.DeleteByID)
+		v1.DELETE("/users", userHandler.DeleteByIDs)
 
 	}
 	roleRepo := repo.NewRoleRepo(database.Inst)
 	roleBiz := biz.NewRoleBiz(roleRepo)
 	roleHandler := handler.NewRoleHandler(roleBiz)
-	roleV := v.Group("/roles")
+	// role
 	{
-		roleV.POST("", roleHandler.Create)              //创建角色
-		roleV.GET("/:id", roleHandler.GetByID)          //根据ID查询
-		roleV.GET("/name/:name", roleHandler.GetByName) //根据name查询
-		roleV.GET("", roleHandler.List)                 //查询所有角色
-		roleV.DELETE("/:id", roleHandler.DeleteByID)    //根据ID删除
+		v1.GET("/role/:id", roleHandler.GetByID)
+		v1.GET("/role/name/:name", roleHandler.GetByName)
+		v1.GET("/roles", roleHandler.List)
+		v1.POST("/role", roleHandler.Create)
+		v1.DELETE("/role/:id", roleHandler.DeleteByID)
 	}
 	permissionRepo := repo.NewPermRepo(database.Inst)
 	permissionBiz := biz.NewPermissionBiz(permissionRepo)
 	permissionHandler := handler.NewPermissionHandler(permissionBiz)
-	permV := v.Group("/permissions")
+	// permission
 	{
-		permV.GET("", permissionHandler.List)                 //查询所有权限
-		permV.POST("", permissionHandler.Create)              //创建
-		permV.PUT("/:id", nil)                                //根据ID更新
-		permV.GET("/:id", permissionHandler.GetByID)          //根据ID查询
-		permV.GET("/name/:name", permissionHandler.GetByName) //根据name查询
-		permV.DELETE("/:id", permissionHandler.DeleteByID)    //根据ID删除角色
+		v1.GET("/perimssions", permissionHandler.List)
+		v1.GET("/:id", permissionHandler.GetByID)
+		v1.GET("/name/:name", permissionHandler.GetByName)
+		v1.POST("/perimssion", permissionHandler.Create)
+		v1.PUT("/perimssion/:id", nil)
+		v1.DELETE("/:id", permissionHandler.DeleteByID)
 	}
 	authHandler := handler.NewAuthHandler(biz.NewAuthBiz(userRepo))
 	{
-		v.POST("/login", authHandler.Login)       //登陆
-		v.POST("/registry", authHandler.Registry) //注册用户
-		v.GET("/info", authHandler.Info)          //获取当前用户信息
+		v1.POST("/login", authHandler.Login)
+		v1.POST("/registry", authHandler.Registry)
+		v1.GET("/info", authHandler.Info) //get current user info
 	}
-	casbinv := v.Group("/casbin")
+	// casbin
 	{
-		casbinv.GET("/policies", func(c *gin.Context) {
-			rules := casbin.GetAllPolicy()
-			c.JSON(http.StatusOK, map[string]any{
-				"policies": rules,
-			})
-		})
+		v1.GET("/casbin/policies", ListPolicies)
+		v1.POST("/casbin/policy", savePolicy)
+		v1.DELETE("/casbin/policy", deletePolicy)
 	}
+
+}
+
+func ListPolicies(c *gin.Context) {
+	rules := casbin.GetAllPolicy()
+	c.JSON(http.StatusOK, map[string]any{
+		"policies": rules,
+	})
+}
+
+func savePolicy(c *gin.Context) {
+	req := model.Policy{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, map[string]any{
+			"msg": err.Error(),
+		})
+		return
+	}
+	fmt.Printf("%+v\n", req)
+	if err := casbin.AddPolicy(req.Sub, req.Obj, req.Act); err != nil {
+		c.JSON(http.StatusInternalServerError, map[string]any{
+			"msg": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, "ok")
+}
+
+func deletePolicy(c *gin.Context) {
+	req := model.Policy{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, map[string]any{
+			"msg": err.Error(),
+		})
+		return
+	}
+	casbin.GetAllPolicy()
+	if err := casbin.RemovePolicy(req.Sub, req.Obj, req.Act); err != nil {
+		c.JSON(http.StatusInternalServerError, map[string]any{
+			"msg": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, "ok")
 }

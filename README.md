@@ -2,28 +2,29 @@
 
 docman
 
-### [git提交规范](https://github.com/meet-outsider/docman/blob/master/docs/git_commit_spec.md)
-
-### [目录结构规范](https://github.com/meet-outsider/docman/blob/master/docs/spgl.md)
-
-### 测试
-
-none
-
-### 文档
-
-### 开始
+# srart
 
 build
 
 ```shell
-go build
+make build
+make build-linux
 ```
 
 run
 
 ```shell
-docman --prod -p 9090
+
+#defaul env is dev
+make run
+or
+
+./docman --dev --port 8080
+
+./docman --prod --port 8080
+
+# help
+./docman -h
 ```
 
 ## Authors

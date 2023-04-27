@@ -13,6 +13,7 @@ type IUserBiz interface {
 	Save(c *gin.Context, user *data.UserInput)
 	GetByID(c *gin.Context, id uint)
 	GetByUsername(c *gin.Context, username string)
+	ListByUsername(c *gin.Context, username string)
 	List(c *gin.Context, pageNum int, pageSize int)
 	Update(c *gin.Context, user *data.User)
 	DeleteByID(c *gin.Context, id uint)
@@ -21,6 +22,12 @@ type IUserBiz interface {
 
 type userBiz struct {
 	repo repo.IUserRepo
+}
+
+func (*userBiz) ListByUsername(c *gin.Context, username string) {
+	users := make([]data.User, 0)
+	database.Inst.Where("username like ?", "%"+username+"%").Find(&users)
+	c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
 func NewUserBiz(repo repo.IUserRepo) IUserBiz {
@@ -54,7 +61,6 @@ func (s *userBiz) Save(c *gin.Context, userInput *data.UserInput) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": user})
-	return
 }
 
 func (s *userBiz) GetByID(c *gin.Context, id uint) {
@@ -64,7 +70,6 @@ func (s *userBiz) GetByID(c *gin.Context, id uint) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": user})
-	return
 }
 
 func (s *userBiz) GetByUsername(c *gin.Context, username string) {
@@ -74,7 +79,6 @@ func (s *userBiz) GetByUsername(c *gin.Context, username string) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": user})
-	return
 }
 
 func (s *userBiz) List(c *gin.Context, page int, limit int) {
@@ -84,7 +88,6 @@ func (s *userBiz) List(c *gin.Context, page int, limit int) {
 		return
 	}
 	c.JSON(http.StatusOK, kit.BuildPagination(list, total, page, limit))
-	return
 }
 
 func (s *userBiz) Update(c *gin.Context, user *data.User) {
@@ -94,7 +97,6 @@ func (s *userBiz) Update(c *gin.Context, user *data.User) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": user})
-	return
 }
 
 func (s *userBiz) DeleteByID(c *gin.Context, u uint) {
@@ -104,7 +106,6 @@ func (s *userBiz) DeleteByID(c *gin.Context, u uint) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
-	return
 }
 
 func (s *userBiz) DeleteByIDs(c *gin.Context, ids []uint) {
@@ -114,5 +115,4 @@ func (s *userBiz) DeleteByIDs(c *gin.Context, ids []uint) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
-	return
 }

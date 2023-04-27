@@ -29,7 +29,7 @@ var (
 				log.Error("Env value must be dev or prod")
 				os.Exit(1)
 			} else {
-				//todo##
+				// default dev
 			}
 
 		},
@@ -42,6 +42,8 @@ func init() {
 	rootCmd.Flags().Bool("prod", false, "run in prod mode")
 	rootCmd.Flags().StringVarP(&serverConf.Env, "Env", "e", "dev", "set Env value")
 	rootCmd.Flags().UintVarP(&serverConf.Port, "port", "p", 0, "set port value")
+	// if user input -h or --help, print help info and exit
+	rootCmd.Flags().BoolP("help", "h", false, "help info")
 
 }
 func init() {
