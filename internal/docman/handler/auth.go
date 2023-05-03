@@ -1,3 +1,7 @@
+// @description 用户登录注册相关接口
+// @author outsider
+// @date 2023-04-01
+// @updated 2023-05-02
 package handler
 
 import (
@@ -18,7 +22,7 @@ func NewAuthHandler(biz biz.IAuthBiz) *AuthHandler {
 }
 
 // Login 用户登录
-func (h *AuthHandler) Login(c *gin.Context) {
+func (s *AuthHandler) Login(c *gin.Context) {
 	var params map[string]string
 	ok := kit.BindJson(c, &params)
 	if !ok {
@@ -30,11 +34,11 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名或密码不能为空"})
 		return
 	}
-	h.biz.Login(c, username, password)
+	s.biz.Login(c, username, password)
 }
 
 // Registry 用户注册
-func (h *AuthHandler) Registry(c *gin.Context) {
+func (s *AuthHandler) Registry(c *gin.Context) {
 	var user data.UserInput
 	ok := kit.BindJson(c, &user)
 	if !ok {
@@ -42,9 +46,9 @@ func (h *AuthHandler) Registry(c *gin.Context) {
 	}
 	// 注册用户为默认角色
 	user.Roles = []uint{1}
-	h.biz.Registry(c, &user)
+	s.biz.Registry(c, &user)
 }
 
-func (h *AuthHandler) Info(c *gin.Context) {
-	h.biz.Info(c)
+func (s *AuthHandler) Info(c *gin.Context) {
+	s.biz.Info(c)
 }

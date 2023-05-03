@@ -36,10 +36,7 @@ func Init() error {
 	if err := validate.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
 		// 验证电话号码
 		phone := fl.Field().Uint()
-		if len(strconv.FormatUint(phone, 10)) != 11 {
-			return false
-		}
-		return true // 这里需要根据实际情况返回 true 或 false
+		return len(strconv.FormatUint(phone, 10)) == 11
 	}); err != nil {
 		panic(err)
 	}
@@ -58,6 +55,7 @@ func UnmarshalJSON(c *gin.Context, param interface{}) bool {
 	}
 	return true
 }
+
 func BindJson(c *gin.Context, param interface{}) bool {
 	if err := c.ShouldBindJSON(param); err != nil {
 		log.Error(err.Error())

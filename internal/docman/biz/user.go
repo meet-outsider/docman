@@ -1,3 +1,7 @@
+// @description: 用户业务逻辑
+// @author: yuanzichao
+// @date: 2021-06-11 16:56:00
+// @version V1
 package biz
 
 import (
@@ -9,6 +13,7 @@ import (
 	"net/http"
 )
 
+// IUserBiz 用户业务逻辑接口
 type IUserBiz interface {
 	Save(c *gin.Context, user *data.UserInput)
 	GetByID(c *gin.Context, id uint)
@@ -20,6 +25,7 @@ type IUserBiz interface {
 	DeleteByIDs(c *gin.Context, ids []uint)
 }
 
+// userBiz 用户业务逻辑实现
 type userBiz struct {
 	repo repo.IUserRepo
 }
@@ -41,14 +47,14 @@ func (s *userBiz) Save(c *gin.Context, userInput *data.UserInput) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名已存在"})
 		return
 	}
-	// 密码加密
+	// password encrypt
 	user.Password = kit.Encrypt(user.Password)
-	// 保存用户
+	// save user
 	if err := s.repo.Save(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	// 保存用户角色关系
+	// save relation of user and role
 	var userRoles []data.UserRole
 	for _, roleID := range userInput.Roles {
 		userRoles = append(userRoles, data.UserRole{
@@ -82,7 +88,16 @@ func (s *userBiz) GetByUsername(c *gin.Context, username string) {
 }
 
 func (s *userBiz) List(c *gin.Context, page int, limit int) {
-	list, total, err := s.repo.List(page, limit)
+	var request struct {
+		User data.User `json:"user"`
+	}
+	user := &request.User
+	ok := kit.UnmarshalJSON(c, &request)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误"})
+		return
+	}
+	list, total, err := s.repo.List(page, limit, *user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -109,6 +124,7 @@ func (s *userBiz) DeleteByID(c *gin.Context, u uint) {
 }
 
 func (s *userBiz) DeleteByIDs(c *gin.Context, ids []uint) {
+
 	err := s.repo.DeleteByIDs(ids)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

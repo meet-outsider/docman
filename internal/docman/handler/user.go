@@ -1,3 +1,7 @@
+// @description 用户接口，包括用户的增删改查，用户登录注册等接口
+// @author outsider
+// @date 2023-04-01
+// @updated 2023-05-02
 package handler
 
 import (
@@ -22,34 +26,34 @@ func NewUserHandler(biz biz.IUserBiz) *UserHandler {
 	return &UserHandler{biz}
 }
 
-func (h *UserHandler) GetByID(c *gin.Context) {
+func (s *UserHandler) GetByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
 		return
 	}
-	h.biz.GetByID(c, uint(id))
+	s.biz.GetByID(c, uint(id))
 }
 
-func (h *UserHandler) GetByUsername(c *gin.Context) {
-	h.biz.GetByUsername(c, c.Param("username"))
+func (s *UserHandler) GetByUsername(c *gin.Context) {
+	s.biz.GetByUsername(c, c.Param("username"))
 }
 
-func (h *UserHandler) ListByUsername(c *gin.Context) {
-	h.biz.ListByUsername(c, c.Param("username"))
+func (s *UserHandler) ListByUsername(c *gin.Context) {
+	s.biz.ListByUsername(c, c.Param("username"))
 }
 
-func (h *UserHandler) List(c *gin.Context) {
+func (s *UserHandler) List(c *gin.Context) {
 	page, limit, err := kit.GetPage(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	h.biz.List(c, page, limit)
+	s.biz.List(c, page, limit)
 }
 
 // Update 更新用户
-func (h *UserHandler) Update(c *gin.Context) {
+func (s *UserHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
@@ -61,21 +65,21 @@ func (h *UserHandler) Update(c *gin.Context) {
 	if !ok {
 		return
 	}
-	h.biz.Update(c, &param.User)
+	s.biz.Update(c, &param.User)
 }
 
-func (h *UserHandler) DeleteByID(context *gin.Context) {
+func (s *UserHandler) DeleteByID(context *gin.Context) {
 	id, err := strconv.Atoi(context.Param("id"))
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
 		return
 	}
-	h.biz.DeleteByID(context, uint(id))
+	s.biz.DeleteByID(context, uint(id))
 }
 
-func (h *UserHandler) Save(c *gin.Context) {
+func (s *UserHandler) Save(c *gin.Context) {
 	var param data.UserInput
-	// 参数校验
+	// parameter check
 	ok := kit.BindJson(c, &param)
 	if !ok {
 		return
@@ -84,14 +88,14 @@ func (h *UserHandler) Save(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "roles is required"})
 		return
 	}
-	h.biz.Save(c, &param)
+	s.biz.Save(c, &param)
 }
 
-func (h *UserHandler) DeleteByIDs(c *gin.Context) {
+func (s *UserHandler) DeleteByIDs(c *gin.Context) {
 	var ids model.IDs
 	ok := kit.BindJson(c, &ids)
 	if !ok {
 		return
 	}
-	h.biz.DeleteByIDs(c, ids.IDs)
+	s.biz.DeleteByIDs(c, ids.IDs)
 }

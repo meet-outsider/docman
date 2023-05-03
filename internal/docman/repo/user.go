@@ -9,11 +9,13 @@ type IUserRepo interface {
 	Save(user *data.User) error
 	GetByID(id uint) (*data.User, error)
 	GetByUsername(username string) (*data.User, error)
-	List(page int, limit int) ([]*data.User, int64, error)
+	List(page int, limit int, user data.User) ([]*data.User, int64, error)
 	Update(user *data.User) error
 	DeleteByID(id uint) error
 	DeleteByIDs(ids []uint) error
 }
+
+var fileds = []string{"id", "username", "email", "nickname", "status", "phone", "created_at", "updated_at"}
 
 type userRepo struct {
 	db *gorm.DB
@@ -43,20 +45,32 @@ func (r *userRepo) GetByUsername(username string) (*data.User, error) {
 	return &user, nil
 }
 
-func (r *userRepo) List(page int, limit int) ([]*data.User, int64, error) {
+func (r *userRepo) List(page int, limit int, user data.User) ([]*data.User, int64, error) {
 	var users []*data.User
 	var count int64
-	r.db.Model(&data.User{}).Count(&count)
-	tx := r.db.Preload("Roles").Offset((page - 1) * limit).Limit(limit).Find(&users)
-	if tx.Error != nil {
-		return nil, 0, tx.Error
+	query := r.db.Model(&data.User{})
+
+	// dynamic query
+	// check string is blank
+	if user.Username != "" {
+		query = query.Where("username LIKE ?", "%"+user.Username+"%")
+	}
+	if user.Email != "" {
+		query = query.Where("email LIKE ?", "%"+user.Email+"%")
+	}
+
+	err := query.Preload("Roles").Select(fileds).Count(&count).Offset((page - 1) * limit).Limit(limit).Find(&users).Error
+	if err != nil {
+		return nil, 0, err
 	}
 
 	return users, count, nil
 }
+
 func (r *userRepo) Update(user *data.User) error {
 	return r.db.Updates(user).Error
 }
+
 func (r *userRepo) DeleteByID(id uint) error {
 	return r.db.Delete(&data.User{}, id).Error
 }

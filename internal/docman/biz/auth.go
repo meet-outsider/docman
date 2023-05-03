@@ -26,8 +26,8 @@ func NewAuthBiz(userRepo repo.IUserRepo) IAuthBiz {
 	}
 }
 
-func (h *authBiz) Login(c *gin.Context, username string, password string) {
-	user, err := h.userRepo.GetByUsername(username)
+func (s *authBiz) Login(c *gin.Context, username string, password string) {
+	user, err := s.userRepo.GetByUsername(username)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "用户不存在"})
 		return
@@ -48,15 +48,14 @@ func (h *authBiz) Login(c *gin.Context, username string, password string) {
 	}
 	token := kit.GenToken(userInfo)
 	c.JSON(http.StatusOK, gin.H{"token": token})
-	return
 }
 
 // Registry 用户注册
-func (h *authBiz) Registry(c *gin.Context, user *data.UserInput) {
-	NewUserBiz(h.userRepo).Save(c, user)
+func (s *authBiz) Registry(c *gin.Context, user *data.UserInput) {
+	NewUserBiz(s.userRepo).Save(c, user)
 }
 
-func (h *authBiz) Info(c *gin.Context) {
+func (s *authBiz) Info(c *gin.Context) {
 	token := c.GetHeader(global.TOKEN)
 	subject, _, err := kit.ParseToken(token)
 	if err != nil {
@@ -64,11 +63,10 @@ func (h *authBiz) Info(c *gin.Context) {
 		return
 	}
 	userId := subject.ID
-	user, err := h.userRepo.GetByID(userId)
+	user, err := s.userRepo.GetByID(userId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "用户不存在"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"user": user})
-	return
 }

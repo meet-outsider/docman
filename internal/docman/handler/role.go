@@ -17,29 +17,29 @@ func NewRoleHandler(biz biz.IRoleBiz) *RoleHandler {
 	return &RoleHandler{biz}
 }
 
-func (h *RoleHandler) Create(c *gin.Context) {
+func (s *RoleHandler) Create(c *gin.Context) {
 	var role data.Role
 	ok := kit.BindJson(c, &role)
 	if !ok {
 		return
 	}
-	h.biz.Save(c, &role)
+	s.biz.Save(c, &role)
 }
 
-func (h *RoleHandler) GetByID(c *gin.Context) {
+func (s *RoleHandler) GetByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
 		return
 	}
-	h.biz.GetByID(c, uint(id))
+	s.biz.GetByID(c, uint(id))
 }
 
-func (h *RoleHandler) GetByName(c *gin.Context) {
-	h.biz.GetByName(c, c.Param("name"))
+func (s *RoleHandler) GetByName(c *gin.Context) {
+	s.biz.GetByName(c, c.Param("name"))
 }
 
-func (h *RoleHandler) List(c *gin.Context) {
+func (s *RoleHandler) List(c *gin.Context) {
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
@@ -50,14 +50,14 @@ func (h *RoleHandler) List(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
 		return
 	}
-	h.biz.List(c, page, limit)
+	s.biz.List(c, page, limit)
 }
 
-func (h *RoleHandler) DeleteByID(c *gin.Context) {
+func (s *RoleHandler) DeleteByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
 		return
 	}
-	h.biz.DeleteById(c, uint(id))
+	s.biz.DeleteById(c, uint(id))
 }
