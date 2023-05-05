@@ -52,10 +52,10 @@ func (r *userRepo) List(page int, limit int, user data.User) ([]*data.User, int6
 
 	// dynamic query
 	// check string is blank
-	if user.Username != "" {
+	if len(user.Username) > 0 {
 		query = query.Where("username LIKE ?", "%"+user.Username+"%")
 	}
-	if user.Email != "" {
+	if len(user.Email) > 0 {
 		query = query.Where("email LIKE ?", "%"+user.Email+"%")
 	}
 
