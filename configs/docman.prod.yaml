@@ -3,7 +3,7 @@ server:
   port: 8888
   api: /api/v1
 database:
-  host: localhost
+  host: 43.139.79.187
   port: 3306
   name: "docman"
   user: "root"

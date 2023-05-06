@@ -44,11 +44,11 @@ func Load() error {
 	viper.SetConfigType("yaml")
 	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("fatal error config file: %s ", err))
 	}
 	// 将配置文件中的值保存到全局结构体对象中
 	if err := viper.Unmarshal(&Config); err != nil {
-		panic(fmt.Errorf("unable to decode into struct： %s \n", err))
+		panic(fmt.Errorf("unable to decode into struct: %s ", err))
 	}
 	if Config.Server.Port == 0 && port == 0 {
 		return fmt.Errorf("port is unset")

@@ -1,27 +1,19 @@
-# syntax=docker/dockerfile:1
+FROM alpine:latest
 
-FROM golang:1.20
-
-# Set destination for COPY
+# 设置工作目录
 WORKDIR /app
 
-# Download Go modules
-COPY go.mod go.sum ./
-RUN go mod download
+# 设置环境变量
+ENV PORT=8888
 
-# Copy the source code. Note the slash at the end, as explained in
-# https://docs.docker.com/engine/reference/builder/#copy
-COPY *.go ./
+# 暴露端口
+EXPOSE $PORT
 
-# Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
+# 复制可执行文件到容器
+COPY main /app
 
-# Optional:
-# To bind to a TCP port, runtime parameters must be supplied to the docker command.
-# But we can document in the Dockerfile what ports
-# the application is going to listen on by default.
-# https://docs.docker.com/engine/reference/builder/#expose
-EXPOSE 8888
+# 复制配置文件到容器
+COPY configs /app/configs
 
-# Run
-CMD ["/docker-gs-ping"]
+# 运行应用
+CMD ["./main","--prod"]
