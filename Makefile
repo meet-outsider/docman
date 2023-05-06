@@ -8,7 +8,7 @@ BINARY_NAME=main
 BINARY_UNIX=$(BINARY_NAME)_unix
 all:  test build
 build:
-		$(GOBUILD) -o $(BINARY_NAME) cmd/main.go
+		$(GOBUILD) -o $(BINARY_NAME) main.go
 test:
 		$(GOTEST) -v ./test/...
 clean:
@@ -16,13 +16,13 @@ clean:
 		rm -f $(BINARY_NAME)
 		rm -f $(BINARY_UNIX)
 run:
-		$(GOBUILD) -o $(BINARY_NAME) cmd/main.go
+		$(GOBUILD) -o $(BINARY_NAME) main.go
 		./$(BINARY_NAME)
 deps:
 		$(GOGET) get
 build-linux:
-		CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_NAME) cmd/main.go
+		CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_NAME) main.go
 build-m1:
-		CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(BINARY_NAME) cmd/main.go
+		CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(BINARY_NAME) main.go
 docker:
 		docker build -t $(BINARY_NAME) .
