@@ -15,28 +15,28 @@ type Pagination struct {
 	TotalPage int         `json:"total_page"`
 }
 
-func PostPage(c *gin.Context) (page int, limit int, err error) {
-	page, err = strconv.Atoi(c.DefaultPostForm("page", "1"))
+func PostPage(ctx *gin.Context) (page int, limit int, err error) {
+	page, err = strconv.Atoi(ctx.DefaultPostForm("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
 		return
 	}
-	limit, err = strconv.Atoi(c.DefaultPostForm("limit", "10"))
+	limit, err = strconv.Atoi(ctx.DefaultPostForm("limit", "10"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page limit"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page limit"})
 		return
 	}
 	return
 }
-func GetPage(c *gin.Context) (page int, limit int, err error) {
-	page, err = strconv.Atoi(c.DefaultQuery("page", "1"))
+func GetPage(ctx *gin.Context) (page int, limit int, err error) {
+	page, err = strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
 		return
 	}
-	limit, err = strconv.Atoi(c.DefaultQuery("limit", "10"))
+	limit, err = strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page limit"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page limit"})
 		return
 	}
 	return

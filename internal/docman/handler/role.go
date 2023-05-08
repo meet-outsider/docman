@@ -17,47 +17,47 @@ func NewRoleHandler(biz biz.IRoleBiz) *RoleHandler {
 	return &RoleHandler{biz}
 }
 
-func (s *RoleHandler) Create(c *gin.Context) {
+func (s *RoleHandler) Create(ctx *gin.Context) {
 	var role data.Role
-	ok := kit.BindJson(c, &role)
+	ok := kit.BindJson(ctx, &role)
 	if !ok {
 		return
 	}
-	s.biz.Save(c, &role)
+	s.biz.Save(ctx, &role)
 }
 
-func (s *RoleHandler) GetByID(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func (s *RoleHandler) GetByID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
 		return
 	}
-	s.biz.GetByID(c, uint(id))
+	s.biz.GetByID(ctx, uint(id))
 }
 
-func (s *RoleHandler) GetByName(c *gin.Context) {
-	s.biz.GetByName(c, c.Param("name"))
+func (s *RoleHandler) GetByName(ctx *gin.Context) {
+	s.biz.GetByName(ctx, ctx.Param("name"))
 }
 
-func (s *RoleHandler) List(c *gin.Context) {
-	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+func (s *RoleHandler) List(ctx *gin.Context) {
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
 		return
 	}
-	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
 		return
 	}
-	s.biz.List(c, page, limit)
+	s.biz.List(ctx, page, limit)
 }
 
-func (s *RoleHandler) DeleteByID(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func (s *RoleHandler) DeleteByID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
 		return
 	}
-	s.biz.DeleteById(c, uint(id))
+	s.biz.DeleteById(ctx, uint(id))
 }

@@ -22,33 +22,33 @@ func NewAuthHandler(biz biz.IAuthBiz) *AuthHandler {
 }
 
 // Login 用户登录
-func (s *AuthHandler) Login(c *gin.Context) {
+func (s *AuthHandler) Login(ctx *gin.Context) {
 	var params map[string]string
-	ok := kit.BindJson(c, &params)
+	ok := kit.BindJson(ctx, &params)
 	if !ok {
 		return
 	}
 	username := params["username"]
 	password := params["password"]
 	if strings.TrimSpace(username) == "" || strings.TrimSpace(password) == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名或密码不能为空"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "用户名或密码不能为空"})
 		return
 	}
-	s.biz.Login(c, username, password)
+	s.biz.Login(ctx, username, password)
 }
 
 // Registry 用户注册
-func (s *AuthHandler) Registry(c *gin.Context) {
+func (s *AuthHandler) Registry(ctx *gin.Context) {
 	var user data.UserInput
-	ok := kit.BindJson(c, &user)
+	ok := kit.BindJson(ctx, &user)
 	if !ok {
 		return
 	}
 	// 注册用户为默认角色
 	user.Roles = []uint{1}
-	s.biz.Registry(c, &user)
+	s.biz.Registry(ctx, &user)
 }
 
-func (s *AuthHandler) Info(c *gin.Context) {
-	s.biz.Info(c)
+func (s *AuthHandler) Info(ctx *gin.Context) {
+	s.biz.Info(ctx)
 }

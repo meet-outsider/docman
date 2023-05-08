@@ -26,46 +26,46 @@ func NewUserHandler(biz biz.IUserBiz) *UserHandler {
 	return &UserHandler{biz}
 }
 
-func (s *UserHandler) GetByID(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func (s *UserHandler) GetByID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
 		return
 	}
-	s.biz.GetByID(c, uint(id))
+	s.biz.GetByID(ctx, uint(id))
 }
 
-func (s *UserHandler) GetByUsername(c *gin.Context) {
-	s.biz.GetByUsername(c, c.Param("username"))
+func (s *UserHandler) GetByUsername(ctx *gin.Context) {
+	s.biz.GetByUsername(ctx, ctx.Param("username"))
 }
 
-func (s *UserHandler) ListByUsername(c *gin.Context) {
-	s.biz.ListByUsername(c, c.Param("username"))
+func (s *UserHandler) ListByUsername(ctx *gin.Context) {
+	s.biz.ListByUsername(ctx, ctx.Param("username"))
 }
 
-func (s *UserHandler) List(c *gin.Context) {
-	page, limit, err := kit.GetPage(c)
+func (s *UserHandler) List(ctx *gin.Context) {
+	page, limit, err := kit.GetPage(ctx)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	s.biz.List(c, page, limit)
+	s.biz.List(ctx, page, limit)
 }
 
 // Update 更新用户
-func (s *UserHandler) Update(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func (s *UserHandler) Update(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id must be int"})
 		return
 	}
 	var param data.UserInput
 	param.ID = uint(id)
-	ok := kit.UnmarshalJSON(c, &param)
+	ok := kit.UnmarshalJSON(ctx, &param)
 	if !ok {
 		return
 	}
-	s.biz.Update(c, &param.User)
+	s.biz.Update(ctx, &param.User)
 }
 
 func (s *UserHandler) DeleteByID(context *gin.Context) {
@@ -77,25 +77,25 @@ func (s *UserHandler) DeleteByID(context *gin.Context) {
 	s.biz.DeleteByID(context, uint(id))
 }
 
-func (s *UserHandler) Save(c *gin.Context) {
+func (s *UserHandler) Save(ctx *gin.Context) {
 	var param data.UserInput
 	// parameter check
-	ok := kit.BindJson(c, &param)
+	ok := kit.BindJson(ctx, &param)
 	if !ok {
 		return
 	}
 	if len(param.Roles) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "roles is required"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "roles is required"})
 		return
 	}
-	s.biz.Save(c, &param)
+	s.biz.Save(ctx, &param)
 }
 
-func (s *UserHandler) DeleteByIDs(c *gin.Context) {
+func (s *UserHandler) DeleteByIDs(ctx *gin.Context) {
 	var ids model.IDs
-	ok := kit.BindJson(c, &ids)
+	ok := kit.BindJson(ctx, &ids)
 	if !ok {
 		return
 	}
-	s.biz.DeleteByIDs(c, ids.IDs)
+	s.biz.DeleteByIDs(ctx, ids.IDs)
 }

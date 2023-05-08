@@ -16,60 +16,60 @@ import (
 var Inst *gin.Engine
 
 func ErrorHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				url := strings.TrimPrefix(c.Request.RequestURI, cfg.Config.Server.Api)
-				method := c.Request.Method
+				url := strings.TrimPrefix(ctx.Request.RequestURI, cfg.Config.Server.Api)
+				method := ctx.Request.Method
 				cause := fmt.Sprintf("%v", err)
 				log.Error(
 					fmt.Sprintf("url: %s, method: %s cause:%s", url, method, cause))
-				c.JSON(http.StatusInternalServerError, gin.H{
+				ctx.JSON(http.StatusInternalServerError, gin.H{
 					"error": "Internal Server Error",
 				})
 			}
 		}()
-		c.Next()
+		ctx.Next()
 	}
 }
 
-func verifyToken(c *gin.Context) {
-	token := c.Request.Header.Get(global.TOKEN)
+func verifyToken(ctx *gin.Context) {
+	token := ctx.Request.Header.Get(global.TOKEN)
 	if len(strings.TrimSpace(token)) == 0 {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"401": "Unauthorized access / 未授权访问"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"401": "Unauthorized access / 未授权访问"})
 		return
 	}
 	subject, exp, err := kit.ParseToken(token)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access / 未授权访问"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access / 未授权访问"})
 		return
 	}
 	if exp.Before(time.Now()) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User identity expired / 用户身份过期"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User identity expired / 用户身份过期"})
 	}
 	subs := subject.Roles
-	obj := c.Request.RequestURI
-	act := c.Request.Method
+	obj := ctx.Request.RequestURI
+	act := ctx.Request.Method
 	for i := range subs {
 		sub := subs[i]
 		ok, err := casbin.Effect.Enforce(sub, obj, act)
 		if err != nil {
 			log.Error(err.Error())
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden access / 禁止访问"})
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden access / 禁止访问"})
 			return
 		}
 		if !ok {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden access / 禁止访问"})
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden access / 禁止访问"})
 			return
 		}
 	}
 }
 
 func requestHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(ctx *gin.Context) {
 		skipUrls := cfg.Config.CasbinRules.SkipUrls
-		url := strings.TrimPrefix(c.Request.URL.RequestURI(), cfg.Config.Server.Api)
-		currUrl := url + "::" + c.Request.Method
+		url := strings.TrimPrefix(ctx.Request.URL.RequestURI(), cfg.Config.Server.Api)
+		currUrl := url + "::" + ctx.Request.Method
 		contains := func(paths []string, target string) bool {
 			for _, path := range paths {
 				if strings.Contains(path, target) {
@@ -79,16 +79,16 @@ func requestHandler() gin.HandlerFunc {
 			return false
 		}
 		if !contains(skipUrls, currUrl) {
-			verifyToken(c)
+			verifyToken(ctx)
 		}
-		c.Next()
+		ctx.Next()
 	}
 }
 func Init() {
 	Inst = gin.Default()
 	Inst.Use(requestHandler())
-	Inst.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{"error": "404 not found"})
+	Inst.NoRoute(func(ctx *gin.Context) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "404 not found"})
 	})
 	Inst.Use(ErrorHandler())
 }

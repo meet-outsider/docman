@@ -1,5 +1,4 @@
-package cbsbin_test
-
+package test
 import (
 	"fmt"
 	"log"
@@ -10,7 +9,7 @@ import (
 	"github.com/casbin/casbin/v2"
 )
 
-func Test(t *testing.T) {
+func TestCasbin(t *testing.T) {
 	// 初始化 casbin Enforcer
 
 	//a, err := gormadapter.NewAdapterByDB(database.Db)

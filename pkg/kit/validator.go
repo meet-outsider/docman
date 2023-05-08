@@ -44,22 +44,22 @@ func Init() error {
 	return zhTranslations.RegisterDefaultTranslations(validate, trans)
 }
 
-func UnmarshalJSON(c *gin.Context, param interface{}) bool {
-	if err := c.ShouldBindJSON(param); err != nil {
+func UnmarshalJSON(ctx *gin.Context, param interface{}) bool {
+	if err := ctx.ShouldBindJSON(param); err != nil {
 		if strings.Contains(err.Error(), "cannot unmarshal") {
 			log.Error(err.Error())
 			// 参数转换错误
-			c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
 			return false
 		}
 	}
 	return true
 }
 
-func BindJson(c *gin.Context, param interface{}) bool {
-	if err := c.ShouldBindJSON(param); err != nil {
+func BindJson(ctx *gin.Context, param interface{}) bool {
+	if err := ctx.ShouldBindJSON(param); err != nil {
 		log.Error(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": Translate(err)})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": Translate(err)})
 		return false
 	}
 	return true

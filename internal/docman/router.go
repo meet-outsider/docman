@@ -7,11 +7,13 @@ import (
 	"docman/internal/docman/repo"
 	"docman/pkg/casbin"
 	"docman/pkg/database"
+	"docman/pkg/kit"
 	"docman/pkg/model"
 	"docman/pkg/server"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func InitRoutes() {
@@ -68,48 +70,53 @@ func InitRoutes() {
 		v1.POST("/casbin/policy", savePolicy)
 		v1.DELETE("/casbin/policy", deletePolicy)
 	}
+	// flowable
+	flowableHandler := handler.NewFlowableHandler(kit.NewFlowable("http://localhost:9000/flowable-rest", "rest-admin", "test"))
+	{
+		v1.GET("/flowable/users", flowableHandler.GetUsers)
+	}
 
 }
 
-func ListPolicies(c *gin.Context) {
+func ListPolicies(ctx *gin.Context) {
 	rules := casbin.GetAllPolicy()
-	c.JSON(http.StatusOK, map[string]any{
+	ctx.JSON(http.StatusOK, map[string]any{
 		"policies": rules,
 	})
 }
 
-func savePolicy(c *gin.Context) {
+func savePolicy(ctx *gin.Context) {
 	req := model.Policy{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]any{
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, map[string]any{
 			"msg": err.Error(),
 		})
 		return
 	}
 	fmt.Printf("%+v\n", req)
 	if err := casbin.AddPolicy(req.Sub, req.Obj, req.Act); err != nil {
-		c.JSON(http.StatusInternalServerError, map[string]any{
+		ctx.JSON(http.StatusInternalServerError, map[string]any{
 			"msg": err.Error(),
 		})
 		return
 	}
-	c.JSON(http.StatusOK, "ok")
+	ctx.JSON(http.StatusOK, "ok")
 }
 
-func deletePolicy(c *gin.Context) {
+func deletePolicy(ctx *gin.Context) {
 	req := model.Policy{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]any{
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, map[string]any{
 			"msg": err.Error(),
 		})
 		return
 	}
 	casbin.GetAllPolicy()
 	if err := casbin.RemovePolicy(req.Sub, req.Obj, req.Act); err != nil {
-		c.JSON(http.StatusInternalServerError, map[string]any{
+		ctx.JSON(http.StatusInternalServerError, map[string]any{
 			"msg": err.Error(),
 		})
 		return
 	}
-	c.JSON(http.StatusOK, "ok")
+	ctx.JSON(http.StatusOK, "ok")
 }

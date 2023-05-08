@@ -17,13 +17,13 @@ func NewPermissionHandler(biz biz.IPermissionBiz) *PermissionHandler {
 	return &PermissionHandler{biz}
 }
 
-func (s *PermissionHandler) Create(c *gin.Context) {
+func (s *PermissionHandler) Create(ctx *gin.Context) {
 	var perm data.Permission
-	ok := kit.BindJson(c, &perm)
+	ok := kit.BindJson(ctx, &perm)
 	if !ok {
 		return
 	}
-	s.biz.Save(c, &perm)
+	s.biz.Save(ctx, &perm)
 }
 
 func (s *PermissionHandler) GetByID(c *gin.Context) {
@@ -35,30 +35,30 @@ func (s *PermissionHandler) GetByID(c *gin.Context) {
 	s.biz.GetByID(c, uint(id))
 }
 
-func (s *PermissionHandler) GetByName(c *gin.Context) {
-	name := c.Param("name")
-	s.biz.GetByName(c, name)
+func (s *PermissionHandler) GetByName(ctx *gin.Context) {
+	name := ctx.Param("name")
+	s.biz.GetByName(ctx, name)
 }
 
-func (s *PermissionHandler) List(c *gin.Context) {
-	pageNum, err := strconv.Atoi(c.DefaultQuery("pageNum", "1"))
+func (s *PermissionHandler) List(ctx *gin.Context) {
+	pageNum, err := strconv.Atoi(ctx.DefaultQuery("pageNum", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
 		return
 	}
-	pageSize, err := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
 		return
 	}
-	s.biz.List(c, pageNum, pageSize)
+	s.biz.List(ctx, pageNum, pageSize)
 }
 
-func (s *PermissionHandler) DeleteByID(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func (s *PermissionHandler) DeleteByID(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid permission ID"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid permission ID"})
 		return
 	}
-	s.biz.DeleteById(c, uint(id))
+	s.biz.DeleteById(ctx, uint(id))
 }
