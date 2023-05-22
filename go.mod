@@ -16,7 +16,7 @@ require (
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.7.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	gorm.io/driver/mysql v1.4.7
+	gorm.io/driver/postgres v1.4.4
 	gorm.io/gorm v1.24.6
 )
 
@@ -71,7 +71,7 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/postgres v1.4.4 // indirect
+	gorm.io/driver/mysql v1.4.7 // indirect
 	gorm.io/driver/sqlserver v1.4.1 // indirect
 	gorm.io/plugin/dbresolver v1.3.0 // indirect
 	modernc.org/libc v1.19.0 // indirect

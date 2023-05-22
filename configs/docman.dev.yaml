@@ -4,10 +4,10 @@ server:
   api: /api/v1
 database:
   host: localhost
-  port: 3306
+  port: 5432
   name: "docman"
-  user: "root"
-  password: "root"
+  user: "postgres"
+  password: "123456"
 logger:
   path: "logs/"
   max-age: "30"
@@ -17,5 +17,5 @@ jwt:
 casbin-rules:
   skip-urls:
     - "/login::POST"
-    - '/registry::POST'
-    - '/info::GET'
+    - "/registry::POST"
+    - "/info::GET"

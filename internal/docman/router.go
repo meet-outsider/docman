@@ -7,7 +7,6 @@ import (
 	"docman/internal/docman/repo"
 	"docman/pkg/casbin"
 	"docman/pkg/database"
-	"docman/pkg/kit"
 	"docman/pkg/model"
 	"docman/pkg/server"
 	"fmt"
@@ -69,11 +68,6 @@ func InitRoutes() {
 		v1.GET("/casbin/policies", ListPolicies)
 		v1.POST("/casbin/policy", savePolicy)
 		v1.DELETE("/casbin/policy", deletePolicy)
-	}
-	// flowable
-	flowableHandler := handler.NewFlowableHandler(kit.NewFlowable("http://localhost:9000/flowable-rest", "rest-admin", "test"))
-	{
-		v1.GET("/flowable/users", flowableHandler.GetUsers)
 	}
 
 }
